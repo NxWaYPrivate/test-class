@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-from pyzbar.pyzbar import decode
-from PIL import Image
 import base64
-import io
+import requests
 
 app = Flask(__name__)
 
@@ -18,27 +16,27 @@ def scan_base64():
     if not image_data:
         return jsonify({'error': 'Image non fournie'}), 400
 
-    # Décodage base64 en image
     try:
         header, encoded = image_data.split(',', 1)
         decoded_bytes = base64.b64decode(encoded)
-        image = Image.open(io.BytesIO(decoded_bytes))
 
-        qr_codes = decode(image)
+        files = {'file': ('image.png', decoded_bytes, 'image/png')}
+        response = requests.post('https://api.qrserver.com/v1/read-qr-code/', files=files)
+        result = response.json()
 
-        if not qr_codes:
+        if not result or not result[0]['symbol'][0]['data']:
             return jsonify({'error': 'Aucun QR Code détecté.'})
 
-        qr_text = qr_codes[0].data.decode('utf-8')
+        qr_text = result[0]['symbol'][0]['data']
 
-        # Nettoyage : extraire prénom même si texte style "Nom : Aymeric BAILLE"
+        # Nettoyage : si QR contient "Nom : Aymeric BAILLE", on extrait juste la partie utile
         if ':' in qr_text:
             qr_text = qr_text.split(':', 1)[1].strip()
 
         return jsonify({'message': f'{qr_text}'})
 
     except Exception as e:
-        return jsonify({'error': f'Erreur traitement image: {str(e)}'}), 500
+        return jsonify({'error': f'Erreur analyse QR : {str(e)}'}), 500
 
 @app.route('/pause', methods=['POST'])
 def pause():
