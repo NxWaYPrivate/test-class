@@ -64,7 +64,7 @@ function scanCameraFrame() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = canvas.toDataURL('image/png');
 
-    toggleLoader(true);
+    toggleLoader(true); // montrer loader UNIQUEMENT pendant le scan
     fetch('/scan_base64', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,11 +72,11 @@ function scanCameraFrame() {
     })
     .then(response => response.json())
     .then(result => {
-        toggleLoader(false);
+        toggleLoader(false); // enlever loader après réponse
         if (result.message) {
             animateResult("✅ " + result.message);
             showNotification("QR Code détecté !");
-            currentQrCode = result.message.split(': ')[1];
+            currentQrCode = result.message;
         } else if (result.error) {
             animateResult(result.error);
         }
@@ -87,13 +87,13 @@ function scanCameraFrame() {
     });
 }
 
-// Activer caméra
+// Activer caméra arrière
 document.getElementById('start-camera').addEventListener('click', () => {
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
             video.srcObject = stream;
             video.classList.remove('hidden');
-            showNotification("Caméra activée !");
+            showNotification("Caméra arrière activée !");
             video.addEventListener('loadedmetadata', () => {
                 if (!scanInterval) {
                     scanInterval = setInterval(scanCameraFrame, 2000);
@@ -106,14 +106,15 @@ document.getElementById('start-camera').addEventListener('click', () => {
         });
 });
 
-// Chrono
+// Chronomètre
 document.getElementById('start-timer').addEventListener('click', () => {
     if (!currentQrCode) {
         alert("Veuillez scanner un QR Code avant de commencer.");
         return;
     }
     if (!timerInterval) {
-        animateTimestamp(`Horodatage : ${new Date().toLocaleString()}`);
+        const timestamp = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+        animateTimestamp(`Horodatage : ${timestamp}`);
         timerInterval = setInterval(() => {
             totalSeconds++;
             const hours = Math.floor(totalSeconds / 3600);
