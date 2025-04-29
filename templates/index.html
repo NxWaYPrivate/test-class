@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Système de Pointage avec QR Code</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Corsaire Télécom" class="logo">
+        <h1>Système de Pointage avec QR Code</h1>
+    </header>
+
+    <main>
+        <section id="scanner">
+            <div id="result">En attente de détection QR...</div>
+            <div class="video-section">
+                <h2>Scanner un QR Code</h2>
+                <button id="start-camera">Activer la caméra</button>
+                <video id="video" autoplay muted class="hidden"></video>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <label for="qr-image">Ou déposez une image :</label>
+                    <input type="file" id="qr-image" name="qr_image" accept="image/*">
+                    <button type="submit">Scanner l'image</button>
+                </form>
+                <div id="loader" class="hidden">
+                    <div class="spinner"></div>
+                    <p>Analyse en cours...</p>
+                </div>
+                <div id="notification" class="hidden"></div> <!-- Zone notification -->
+            </div>
+        </section>
+
+        <section class="timer-section">
+            <h2>Horodatage et chronomètre</h2>
+            <div id="timestamp">Horodatage : Non défini</div>
+            <div id="timer">Chronomètre : 00:00:00</div>
+            <div class="controls">
+                <button id="start-timer">Démarrer le travail</button>
+                <button id="pause-timer">Pause / Reprendre</button>
+                <button id="stop-timer">Fin de session</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        © 2025 Corsaire Télécom — Système de Pointage QR Code
+    </footer>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
