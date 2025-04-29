@@ -2,3 +2,4 @@ flask
 pyzbar
 pillow
 gunicorn
+requests
