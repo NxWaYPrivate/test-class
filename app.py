@@ -12,31 +12,22 @@ def index():
 def scan_base64():
     data = request.get_json()
     image_data = data.get('image')
-
     if not image_data:
-        return jsonify({'error': 'Image non fournie'}), 400
-
+        return jsonify({'error': 'Image manquante'}), 400
     try:
-        header, encoded = image_data.split(',', 1)
-        decoded_bytes = base64.b64decode(encoded)
-
-        files = {'file': ('image.png', decoded_bytes, 'image/png')}
+        _, encoded = image_data.split(',', 1)
+        decoded = base64.b64decode(encoded)
+        files = {'file': ('image.png', decoded, 'image/png')}
         response = requests.post('https://api.qrserver.com/v1/read-qr-code/', files=files)
         result = response.json()
-
-        if not result or not result[0]['symbol'][0]['data']:
-            return jsonify({'error': 'Aucun QR Code détecté.'})
-
-        qr_text = result[0]['symbol'][0]['data']
-
-        # Nettoyage : si QR contient "Nom : Aymeric BAILLE", on extrait juste la partie utile
-        if ':' in qr_text:
-            qr_text = qr_text.split(':', 1)[1].strip()
-
-        return jsonify({'message': f'{qr_text}'})
-
+        content = result[0]['symbol'][0]['data']
+        if not content:
+            return jsonify({'error': 'Aucun QR détecté.'})
+        if ':' in content:
+            content = content.split(':', 1)[1].strip()
+        return jsonify({'message': content})
     except Exception as e:
-        return jsonify({'error': f'Erreur analyse QR : {str(e)}'}), 500
+        return jsonify({'error': f'Erreur : {str(e)}'}), 500
 
 @app.route('/pause', methods=['POST'])
 def pause():
@@ -47,4 +38,4 @@ def stop():
     return jsonify({'message': "Session terminée."})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
