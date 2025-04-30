@@ -37,6 +37,7 @@ def scan_base64():
 
     except Exception as e:
         return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
+    return jsonify({'message': 'TEST OK'})
 
 @app.route('/pause', methods=['POST'])
 def pause():
