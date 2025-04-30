@@ -40,6 +40,7 @@ function scanCameraFrame() {
     })
     .then(res => res.json())
     .then(result => {
+        console.log(result);
         toggleLoader(false);
         if (result.message) {
             animateResult("✅ " + result.message);
