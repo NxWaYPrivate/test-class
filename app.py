@@ -32,6 +32,8 @@ def scan_base64():
             symbol_data = symbol_data.split(':', 1)[1].strip()
 
         return jsonify({'message': symbol_data})
+        print("Image reçue")
+        print("Résultat API QRserver :", result)
 
     except Exception as e:
         return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
