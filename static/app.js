@@ -22,9 +22,6 @@ function animateTimerDisplay(content) {
 function animateTimestamp(content) {
     document.getElementById('timestamp').textContent = content;
 }
-function toggleLoader(show) {
-    document.getElementById('loader').style.display = show ? 'block' : 'none';
-}
 function scanCameraFrame() {
     if (video.videoWidth === 0 || video.videoHeight === 0) return;
     const canvas = document.createElement('canvas');
@@ -32,7 +29,7 @@ function scanCameraFrame() {
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
     const imageData = canvas.toDataURL('image/png');
-    toggleLoader(true);
+
     fetch('/scan_base64', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,16 +38,16 @@ function scanCameraFrame() {
     .then(res => res.json())
     .then(result => {
         console.log(result);
-        toggleLoader(false);
         if (result.message) {
             animateResult("✅ " + result.message);
             showNotification("QR Code détecté !");
             currentQrCode = result.message;
         } else if (result.error) {
             animateResult(result.error);
+            showNotification("Erreur : " + result.error, true);
         }
     })
-    .catch(() => toggleLoader(false));
+    .catch(() => showNotification("Erreur serveur", true));
 }
 document.getElementById('start-camera').addEventListener('click', () => {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
