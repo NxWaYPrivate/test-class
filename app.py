@@ -30,7 +30,10 @@ def scan_base64():
         # Nettoyage si le contenu contient "Nom :"
         if ':' in symbol_data:
             symbol_data = symbol_data.split(':', 1)[1].strip()
-
+        
+        # Horodatage à l'heure de Paris
+        horodatage = datetime.now(pytz.timezone("Europe/Paris")).strftime("%d/%m/%Y %H:%M:%S")
+        
         return jsonify({'message': symbol_data})
         print("Image reçue")
         print("Résultat API QRserver :", result)
