@@ -34,8 +34,14 @@ def scan_base64():
         # Horodatage à l'heure de Paris
         horodatage = datetime.now(pytz.timezone("Europe/Paris")).strftime("%d/%m/%Y %H:%M:%S")
         
-        return jsonify({'message': symbol_data})
-        print("Image reçue")
+        return jsonify({
+            'message': symbol_data
+            'timestamps': horodatage 
+    })
+        except Exception as e:
+        return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
+        
+    print("Image reçue")
         print("Résultat API QRserver :", result)
 
     except Exception as e:
