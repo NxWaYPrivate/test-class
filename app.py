@@ -25,6 +25,7 @@ def scan_base64():
         result = response.json()
 
         symbol_data = result[0].get('symbol', [{}])[0].get('data')
+        print("Résultat API QRserver :", result)
         if not symbol_data:
             return jsonify({'error': 'Aucun QR détecté.'})
 
