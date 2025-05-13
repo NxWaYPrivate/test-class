@@ -38,9 +38,11 @@ function scanCameraFrame() {
     .then(res => res.json())
     .then(result => {
         console.log(result);
+
         if (result.message) {
-            animateResult("✅ " + result.message);
-            showNotification("QR Code détecté !");
+            animateResult("✅ QR Code détecté : " + result.message);
+            animateTimestamp("Horodatage : " + result.timestamp);
+            showNotification("QR Code détecté à " + result.timestamp);
             currentQrCode = result.message;
         } else if (result.error) {
             animateResult(result.error);
@@ -48,6 +50,7 @@ function scanCameraFrame() {
         }
     })
     .catch(() => showNotification("Erreur serveur", true));
+}
 }
 document.getElementById('start-camera').addEventListener('click', () => {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
