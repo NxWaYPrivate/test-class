@@ -12,16 +12,19 @@ function showNotification(message, isError = false) {
     notification.style.color = isError ? '#ff5252' : '#4caf50';
     setTimeout(() => notification.classList.add('hidden'), 3000);
 }
+
 function animateResult(message) {
-    const resultEl = document.getElementById('result');
-    resultEl.textContent = message;
+    document.getElementById('result').textContent = message;
 }
+
 function animateTimerDisplay(content) {
     document.getElementById('timer').textContent = content;
 }
+
 function animateTimestamp(content) {
     document.getElementById('timestamp').textContent = content;
 }
+
 function scanCameraFrame() {
     if (video.videoWidth === 0 || video.videoHeight === 0) return;
     const canvas = document.createElement('canvas');
@@ -37,8 +40,7 @@ function scanCameraFrame() {
     })
     .then(res => res.json())
     .then(result => {
-        console.log(result);
-
+        console.log("DEBUG", result);
         if (result.message) {
             animateResult("✅ QR Code détecté : " + result.message);
             animateTimestamp("Horodatage : " + result.timestamp);
@@ -51,7 +53,7 @@ function scanCameraFrame() {
     })
     .catch(() => showNotification("Erreur serveur", true));
 }
-}
+
 document.getElementById('start-camera').addEventListener('click', () => {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then(stream => {
@@ -67,11 +69,10 @@ document.getElementById('start-camera').addEventListener('click', () => {
             showNotification("Erreur accès caméra", true);
         });
 });
+
 document.getElementById('start-timer').addEventListener('click', () => {
     if (!currentQrCode) return alert("Veuillez scanner un QR Code.");
     if (!timerInterval) {
-        const ts = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
-        animateTimestamp("Horodatage : " + ts);
         timerInterval = setInterval(() => {
             totalSeconds++;
             let h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
@@ -81,7 +82,9 @@ document.getElementById('start-timer').addEventListener('click', () => {
         }, 1000);
     }
 });
+
 document.getElementById('pause-timer').addEventListener('click', () => clearInterval(timerInterval));
+
 document.getElementById('stop-timer').addEventListener('click', () => {
     clearInterval(timerInterval);
     timerInterval = null;
