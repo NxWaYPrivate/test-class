@@ -40,14 +40,12 @@ function scanCameraFrame() {
     })
     .then(res => res.json())
     .then(result => {
-        console.log("DEBUG", result);
         if (result.message) {
             animateResult("✅ QR Code détecté : " + result.message);
             animateTimestamp("Horodatage : " + result.timestamp);
             showNotification("QR Code détecté à " + result.timestamp);
             currentQrCode = result.message;
         } else if (result.error) {
-            animateResult(result.error);
             showNotification("Erreur : " + result.error, true);
         }
     })
