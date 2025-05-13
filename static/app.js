@@ -40,15 +40,21 @@ function scanCameraFrame() {
     })
     .then(res => res.json())
     .then(result => {
-        if (result.message) {
-            animateResult("✅ QR Code détecté : " + result.message);
-            animateTimestamp("Horodatage : " + result.timestamp);
-            showNotification("QR Code détecté à " + result.timestamp);
-            currentQrCode = result.message;
-        } else if (result.error) {
-            showNotification("Erreur : " + result.error, true);
-        }
-    })
+    console.log("Réponse JSON du serveur :", result);
+
+    if (result.message && result.timestamp) {
+        animateResult("✅ QR Code détecté : " + result.message);
+        animateTimestamp("Horodatage : " + result.timestamp);
+        showNotification("QR Code détecté à " + result.timestamp);
+        currentQrCode = result.message;
+    } else if (result.error) {
+        animateResult("❌ " + result.error);
+        showNotification("Erreur : " + result.error, true);
+    } else {
+        animateResult("❌ Réponse inattendue.");
+        showNotification("Réponse invalide reçue du serveur.", true);
+    }
+})
     .catch(() => showNotification("Erreur serveur", true));
 }
 
