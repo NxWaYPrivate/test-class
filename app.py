@@ -36,7 +36,7 @@ def scan_base64():
         
         return jsonify({
             'message': symbol_data
-            'timestamp': horodatage 
+            'timestamps': horodatage 
     })
         except Exception as e:
         return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
