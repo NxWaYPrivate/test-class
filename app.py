@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import base64
 import requests
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 
@@ -22,31 +24,22 @@ def scan_base64():
         response = requests.post('https://api.qrserver.com/v1/read-qr-code/', files=files)
         result = response.json()
 
-        # Récupération sécurisée du contenu QR
         symbol_data = result[0].get('symbol', [{}])[0].get('data')
         if not symbol_data:
             return jsonify({'error': 'Aucun QR détecté.'})
 
-        # Nettoyage si le contenu contient "Nom :"
         if ':' in symbol_data:
             symbol_data = symbol_data.split(':', 1)[1].strip()
-        
-        # Horodatage à l'heure de Paris
+
         horodatage = datetime.now(pytz.timezone("Europe/Paris")).strftime("%d/%m/%Y %H:%M:%S")
-        
+
         return jsonify({
-            'message': symbol_data
-            'timestamps': horodatage 
-    })
-        except Exception as e:
-        return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
-        
-    print("Image reçue")
-        print("Résultat API QRserver :", result)
+            'message': symbol_data,
+            'timestamp': horodatage
+        })
 
     except Exception as e:
         return jsonify({'error': f'Erreur analyse : {str(e)}'}), 500
-    return jsonify({'message': 'TEST OK'})
 
 @app.route('/pause', methods=['POST'])
 def pause():
