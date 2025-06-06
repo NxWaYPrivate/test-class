@@ -1,7 +1,6 @@
 let currentQrCode = null;
 let totalSeconds = 0;
 let timerInterval = null;
-let scanInterval = null;
 
 const video = document.getElementById('video');
 const notification = document.getElementById('notification');
@@ -25,53 +24,36 @@ function animateTimestamp(content) {
     document.getElementById('timestamp').textContent = content;
 }
 
-function scanCameraFrame() {
-    if (video.videoWidth === 0 || video.videoHeight === 0) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    const imageData = canvas.toDataURL('image/png');
-
+// Simule un scan côté client
+function simulateScan() {
     fetch('/scan_base64', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageData }),
+        body: JSON.stringify({ image: "fake_base64_data" }),
     })
     .then(res => res.json())
     .then(result => {
-    console.log("Réponse JSON du serveur :", result);
-
-    if (result.message && result.timestamp) {
-        animateResult("✅ QR Code détecté : " + result.message);
-        animateTimestamp("Horodatage : " + result.timestamp);
-        showNotification("QR Code détecté à " + result.timestamp);
-        currentQrCode = result.message;
-    } else if (result.error) {
-        animateResult("❌ " + result.error);
-        showNotification("Erreur : " + result.error, true);
-    } else {
-        animateResult("❌ Réponse inattendue.");
-        showNotification("Réponse invalide reçue du serveur.", true);
-    }
-})
+        if (result.message && result.timestamp) {
+            animateResult("QR Code détecté : " + result.message);
+            animateTimestamp("Horodatage : " + result.timestamp);
+            showNotification("QR Code détecté à " + result.timestamp);
+            currentQrCode = result.message;
+        } else {
+            animateResult(" Erreur de détection");
+            showNotification("Erreur lors du scan", true);
+        }
+    })
     .catch(() => showNotification("Erreur serveur", true));
 }
 
 document.getElementById('start-camera').addEventListener('click', () => {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(stream => {
-            video.srcObject = stream;
-            video.classList.remove('hidden');
-            showNotification("Caméra arrière activée !");
-            video.addEventListener('loadedmetadata', () => {
-                if (!scanInterval) scanInterval = setInterval(scanCameraFrame, 2000);
-            });
-        })
-        .catch(err => {
-            console.error("Erreur caméra :", err);
-            showNotification("Erreur accès caméra", true);
-        });
+    video.classList.remove('hidden');
+    showNotification("Caméra  activée !");
+});
+
+document.getElementById('upload-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    simulateScan();
 });
 
 document.getElementById('start-timer').addEventListener('click', () => {
@@ -87,7 +69,14 @@ document.getElementById('start-timer').addEventListener('click', () => {
     }
 });
 
-document.getElementById('pause-timer').addEventListener('click', () => clearInterval(timerInterval));
+document.getElementById('pause-timer').addEventListener('click', () => {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    } else {
+        document.getElementById('start-timer').click();
+    }
+});
 
 document.getElementById('stop-timer').addEventListener('click', () => {
     clearInterval(timerInterval);
