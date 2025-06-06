@@ -24,7 +24,7 @@ function animateTimestamp(content) {
     document.getElementById('timestamp').textContent = content;
 }
 
-// Simule un scan côté client
+//  un scan côté client
 function simulateScan() {
     fetch('/scan_base64', {
         method: 'POST',
@@ -47,8 +47,16 @@ function simulateScan() {
 }
 
 document.getElementById('start-camera').addEventListener('click', () => {
-    video.classList.remove('hidden');
-    showNotification("Caméra  activée !");
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            video.classList.remove('hidden');
+        })
+        .catch(err => {
+            console.error("Erreur caméra :", err);
+            alert("Erreur : accès caméra refusé.");
+        });
 });
 
 document.getElementById('upload-form').addEventListener('submit', function (e) {
