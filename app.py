@@ -10,7 +10,7 @@ def index():
 
 @app.route('/scan_base64', methods=['POST'])
 def scan_base64():
-    # Simule un résultat de scan QR code
+    #  résultat de scan QR code
     horodatage = datetime.now(pytz.timezone("Europe/Paris")).strftime("%d/%m/%Y %H:%M:%S")
     return jsonify({
         'message': "Aymeric BAILLE",
